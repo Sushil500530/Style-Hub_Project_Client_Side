@@ -1,10 +1,14 @@
 import { useState } from "react";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
+import useAuth from "../../hooks/useAuth";
+import toast from "react-hot-toast";
+import { FcGoogle } from "react-icons/fc";
 
 
 
 const Register = () => {
+    const { createUser, updateUserProfile,googleSignIn } = useAuth();
     const navigate = useNavigate();
     const [passwordError, setPasswordError] = useState('');
     const [showPassword, setShowPassword] = useState(false);
@@ -27,37 +31,48 @@ const Register = () => {
         else if (!/[!@#$%^&*()_+{}\[\]:;<>,.?~\\|\-]/.test(password)) {
             return setPasswordError("you should be at least one special character")
         }
+        createUser(email, password)
+            .then(result => {
+                updateUserProfile(name, "https://i.ibb.co/Jt0tPSh/user.png")
+                    .then(() => {
+                        const userDetails = {
+                            name: name,
+                            email: email,
+                            role: "guest",
+                            status: 'verified'
+                        }
+                        console.log(userDetails);
+                    })
+                    .catch(error => console.error(error))
 
-        // createUser(email, password)
-        //     .then(result => {
-        //         console.log(result.user);
-        //         if (result.user) {
-        //             toast.success('Create successfully...!', {
-        //                 position: toast.POSITION.TOP_CENTER
-        //             })
-        //             updateProfile(result.user, {
-        //                 displayName: name,
-        //                 photoURL: "https://i.ibb.co/Jt0tPSh/user.png"
-        //             })
-        //                 .then(() => {
-        //                     setTimeout(() => {
-        //                         return navigate('/login')
-        //                     },1000)
-        //                 })
-        //                 .catch(error => console.error(error))
-        //         }
-                
-        //     })
-        //     .catch(() => {
-        //         setPasswordError("Already Use In! Please Try Another Email Account");
-        //     })
-
+                if (result?.user) {
+                    navigate(location?.state ? location.state : "/")
+                    toast.success('resister successfully....!');
+                }
+            })
+            .catch((error) => {
+                toast.error(error.message)
+            })
     }
+    const handleGoogleSignIn = () => {
+        googleSignIn()
+        .then((res) => {
+            const userDetails = {
+                name: res?.user?.displayName,
+                email: res?.user?.email,
+                role: "guest",
+                status: 'verified'
+            }
+            console.log(userDetails);
+        })
+        .catch(error => toast.error(error.message))
+    }
+
     return (
         <div className="w-full h-auto lg:h-screen bg-cover bg-no-repeat object-contain text-black pb-12 ">
             <h1 className="text-black text-2xl py-8 font-bold text-center">Gaine To New Experience From Here🎉</h1>
             <div className='container mx-auto flex flex-col lg:flex-row gap-5 items-center justify-center text-white'>
-                <div className="w-full lg:w-1/2 h-[650px]">
+                <div className="w-full lg:w-1/2 h-auto lg:h-[780px]">
                     <img src="https://i.ibb.co/ncZSDCN/data-1084-gambar-login-png-37.jpg" className="w-full h-full rounded-md" alt="register-photo" />
                 </div>
                 <div className="w-full lg:w-1/2 h-auto bg-gradient-to-b from-[#344281] to-[#512a6b] border pb-5 rounded-md">
@@ -85,6 +100,12 @@ const Register = () => {
                         <button className="btn bg-gradient-to-r from-[#344281] to-[#9b04ff] text-white hover:text-black text-[18px] w-full capitalize font-semibold">Resister</button>
                         <h2 className="font-bold text-center">Already Have an Account? <Link to='/login' className="text-blue-600 hover:underline ">Please Login</Link></h2>
                     </form>
+                    <div className='w-full md:w-[466px] lg:w-full mx-auto p-5'>
+                        <div onClick={handleGoogleSignIn} className="border-2 mx-auto w-full lg:w-[400px] lg:h-[60px] hover:bg-gray-200 cursor-pointer hover:text-blue-500 transition ease-in rounded-full my-5 flex items-center justify-center gap-3">
+                            <p className="text-[38px] p-2"><FcGoogle></FcGoogle></p>
+                            <h2 className="text-[18px] font-semibold">Continue With Google</h2>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
