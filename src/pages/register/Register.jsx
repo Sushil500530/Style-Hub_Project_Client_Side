@@ -4,11 +4,13 @@ import { Link, useNavigate } from "react-router-dom";
 import useAuth from "../../hooks/useAuth";
 import toast from "react-hot-toast";
 import { FcGoogle } from "react-icons/fc";
+import useAxiosPublic from "../../hooks/useAxiosPublic";
 
 
 
 const Register = () => {
-    const { createUser, updateUserProfile,googleSignIn } = useAuth();
+    const axiosPublic = useAxiosPublic();
+    const { createUser, updateUserProfile, googleSignIn } = useAuth();
     const navigate = useNavigate();
     const [passwordError, setPasswordError] = useState('');
     const [showPassword, setShowPassword] = useState(false);
@@ -41,7 +43,11 @@ const Register = () => {
                             role: "guest",
                             status: 'verified'
                         }
-                        console.log(userDetails);
+                        axiosPublic.post('/users', userDetails)
+                            .then(res => {
+                                console.log(res.data);
+                            })
+
                     })
                     .catch(error => console.error(error))
 
@@ -56,16 +62,23 @@ const Register = () => {
     }
     const handleGoogleSignIn = () => {
         googleSignIn()
-        .then((res) => {
-            const userDetails = {
-                name: res?.user?.displayName,
-                email: res?.user?.email,
-                role: "guest",
-                status: 'verified'
-            }
-            console.log(userDetails);
-        })
-        .catch(error => toast.error(error.message))
+            .then((res) => {
+                const userDetails = {
+                    name: res?.user?.displayName,
+                    email: res?.user?.email,
+                    role: "guest",
+                    status: 'verified'
+                }
+                axiosPublic.post('/users', userDetails)
+                    .then(res => {
+                        console.log(res.data);
+                    })
+                if (res.user) {
+                    navigate(location?.state ? location.state : "/")
+                    toast.success('resister successfully....!');
+                }
+            })
+            .catch(error => toast.error(error.message))
     }
 
     return (
