@@ -1,11 +1,12 @@
+import { Link } from "react-router-dom";
 import Logo from "../logo/Logo";
 import Manulist from "./manulist/Manulist";
 import { FaBars } from "react-icons/fa";
 
 const Navbar = () => {
     return (
-        <div className=" bg-base-100">
-            <div className="flex items-center justify-between px-3 bg-base-300">
+        <div>
+            <div className="flex items-center justify-between px-3">
                 <div className="navbar-start ">
                     <div className="dropdown absolute right-0 top-0">
                         <button className="p-2 text-2xl lg:hidden" onClick={() => document.getElementById('my_modal_5').showModal()}><FaBars /></button>
@@ -22,11 +23,14 @@ const Navbar = () => {
                             </div>
                         </dialog>
                     </div>
-                   <Logo />
+                    <Logo />
                 </div>
                 <div className="navbar-center hidden lg:flex">
                     <ul className="menu menu-horizontal px-1 flex flex-row gap-5 text-[17px] font-medium">
                         <Manulist />
+                        <Link to="login">
+                            <button className="btn bg-gradient-to-r from-[#344281] to-[#9b04ff] text-white px-10">Login</button>
+                        </Link>
                     </ul>
                 </div>
             </div>
