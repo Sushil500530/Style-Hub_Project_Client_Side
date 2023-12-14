@@ -2,10 +2,15 @@ import { useState } from "react";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { FcGoogle } from "react-icons/fc";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import useAuth from "../../hooks/useAuth";
+import useAxiosPublic from "../../hooks/useAxiosPublic";
+import toast from "react-hot-toast";
 
 
 
 const Login = () => {
+    const {loginUser,googleSignIn} = useAuth();
+    const axiosPublic = useAxiosPublic();
     const navigate = useNavigate();
     const location = useLocation()
     const [terms, setTerms] = useState('');
@@ -24,41 +29,43 @@ const Login = () => {
             return setTerms("Please select terms and conditions")
         }
 
-        // loginUser(email, password)
-        //     .then(result => {
-        //         if (result.user) {
-        //             toast.success('log in successfully...!', {
-        //                 position: toast.POSITION.TOP_CENTER
-        //             })
-        //              setTimeout(() => {
-        //               return  navigate(location?.state ? location.state : "/")
-        //             }, 1000)
-        //         }
-        //     })
-        //     .catch(() => {
-        //         setPasswordError("Password doesn't match")
-        //     })
+        loginUser(email, password)
+            .then(result => {
+                if (result.user) {
+                    navigate(location?.state ? location.state : "/")
+                    toast.success('resister successfully....!');
+                }
+                else{
+                    return toast.error('your account is not found!')
+                }
+            })
+            .catch(() => {
+                toast.error("Password doesn't match")
+            })
     }
-    // const handleGoogleSignIn = () => {
-    //     googleSignIn()
-    //         .then(result => {
-    //             if (result.user) {
-    //                 toast.success('log in successfully...!', {
-    //                     position: toast.POSITION.TOP_CENTER
-    //                 })
-    //                  setTimeout(() => {
-    //                    return navigate(location?.state ? location.state : "/")
-    //                 }, 1000)
-    //             }
-    //         })
-    //         .catch(error => {
-    //             console.error(error);
-    //         })
-    // }
+    const handleGoogleSignIn =async () => {
+        await googleSignIn()
+             .then((res) => {
+                 const userDetails = {
+                     name: res?.user?.displayName,
+                     email: res?.user?.email,
+                     role: "guest",
+                     status: 'verified'
+                 }
+                 axiosPublic.post('/user', userDetails)
+                     .then(res => {
+                         console.log(res.data);
+                     })
+                 if (res.user) {
+                     navigate(location?.state ? location.state : "/")
+                     toast.success('resister successfully....!');
+                 }
+             })
+             .catch(error => toast.error(error.message))
+     }
     // bg-[url('https://i.ibb.co/vxNB59d/login-bg.png')] w-full h-auto bg-cover bg-no-repeat object-contain pb-12
     return (
-        <div className='text-white w-full h-3/4'>
-            <div className=" w-full lg:w-[580px] mx-auto mt-12 bg-gradient-to-b from-[#344281] to-[#512a6b] border pb-5 rounded-md">
+            <div className=" w-full lg:w-[580px] text-white mx-auto mt-12 bg-gradient-to-b from-[#344281] to-[#512a6b] border pb-5 rounded-md">
                 <form onSubmit={handleLogin} className="p-5 border">
                     <h3 className="text-2xl font-semibold mb-10 mt-5 text-center">Please Login</h3>
                     <label className="text-xl font-bold my-5">Email
@@ -92,14 +99,13 @@ const Login = () => {
                     <hr className="w-64 h-px my-8 bg-gray-400 border-0 dark:bg-black" />
                     <span className="absolute px-3 font-medium text-black -translate-x-1/2 bg-white left-1/2 dark:text-white dark:bg-black">Or</span>
                 </div>
-                <div className='w-full md:w-[466px] lg:w-full mx-auto p-5'>
+                <div onClick={handleGoogleSignIn} className='w-full md:w-[466px] lg:w-full mx-auto p-5'>
                     <div className="border-2 mx-auto w-full lg:w-[400px] lg:h-[60px] hover:bg-gray-200 cursor-pointer hover:text-blue-500 transition ease-in rounded-full my-5 flex items-center justify-center gap-3">
                         <p className="text-[38px] p-2"><FcGoogle></FcGoogle></p>
                         <h2 className="text-[18px] font-semibold">Continue With Google</h2>
                     </div>
                 </div>
             </div>
-        </div>
     );
 };
 

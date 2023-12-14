@@ -14,7 +14,7 @@ const Register = () => {
     const navigate = useNavigate();
     const [passwordError, setPasswordError] = useState('');
     const [showPassword, setShowPassword] = useState(false);
-    const handleResister = e => {
+    const handleResister = async e => {
         e.preventDefault();
         const form = e.target;
         const name = form.name.value;
@@ -33,7 +33,7 @@ const Register = () => {
         else if (!/[!@#$%^&*()_+{}\[\]:;<>,.?~\\|\-]/.test(password)) {
             return setPasswordError("you should be at least one special character")
         }
-        createUser(email, password)
+       await createUser(email, password)
             .then(result => {
                 updateUserProfile(name, "https://i.ibb.co/Jt0tPSh/user.png")
                     .then(() => {
@@ -43,7 +43,7 @@ const Register = () => {
                             role: "guest",
                             status: 'verified'
                         }
-                        axiosPublic.post('/users', userDetails)
+                        axiosPublic.post('/user', userDetails)
                             .then(res => {
                                 console.log(res.data);
                             })
@@ -60,8 +60,8 @@ const Register = () => {
                 toast.error(error.message)
             })
     }
-    const handleGoogleSignIn = () => {
-        googleSignIn()
+    const handleGoogleSignIn =async () => {
+       await googleSignIn()
             .then((res) => {
                 const userDetails = {
                     name: res?.user?.displayName,
@@ -69,7 +69,7 @@ const Register = () => {
                     role: "guest",
                     status: 'verified'
                 }
-                axiosPublic.post('/users', userDetails)
+                axiosPublic.post('/user', userDetails)
                     .then(res => {
                         console.log(res.data);
                     })
