@@ -77,17 +77,14 @@ const Navbar = () => {
                                     </div>
                                     <ul tabIndex={0} className="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52">
                                         <Link to="setting">
-                                            <li>
-                                                <a className="justify-between">
+                                            <li className="w-full btn btn-sm">
                                                     Profile
-                                                    <span className="badge">New</span>
-                                                </a>
                                             </li>
                                         </Link>
                                         <Link to='setting'>
-                                            <li><a>Settings</a></li>
+                                            <li className="w-full btn btn-sm my-1">Settings</li>
                                         </Link>
-                                        <li onClick={handleLogout}><a>Logout</a></li>
+                                        <li onClick={handleLogout} className="w-full btn btn-sm">Logout</li>
                                     </ul>
                                 </div>
                                 <button className="btn bg-gradient-to-r from-[#f24810] to-[#f36913] text-white px-10 hover:text-black" onClick={handleLogout}>Logout</button>

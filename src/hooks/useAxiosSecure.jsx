@@ -25,6 +25,7 @@ const useAxiosSecure = () => {
         }
     })
    },[navigate , userLogout])
+   return axiosSecure
 };
 
 export default useAxiosSecure;
